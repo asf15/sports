@@ -414,7 +414,7 @@ def main(source_video_path: str, target_video_path: str, device: str, mode: Mode
         for frame in tqdm(frame_generator, total=video_info.total_frames, desc="Processing video"):
             sink.write_frame(frame)
 
-            cv2.imshow("frame", frame)
+            cv2.imshow(f"{target_video_path}", frame)
             if cv2.waitKey(1) & 0xFF == ord("q"):
                 break
         cv2.destroyAllWindows()
