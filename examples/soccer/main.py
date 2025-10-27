@@ -226,7 +226,8 @@ def run_ball_detection(source_video_path: str, device: str) -> Iterator[np.ndarr
 
     slicer = sv.InferenceSlicer(
         callback=callback,
-        overlap_filter_strategy=sv.OverlapFilter.NONE,
+        #overlap_filter_strategy=sv.OverlapFilter.NONE,
+        #overlap_strategy=sv.OverlapFilter.NONE,
         slice_wh=(640, 640),
     )
 
@@ -410,7 +411,7 @@ def main(source_video_path: str, target_video_path: str, device: str, mode: Mode
 
     video_info = sv.VideoInfo.from_video_path(source_video_path)
     with sv.VideoSink(target_video_path, video_info) as sink:
-        for frame in frame_generator:
+        for frame in tqdm(frame_generator, total=video_info.total_frames, desc="Processing video"):
             sink.write_frame(frame)
 
             cv2.imshow("frame", frame)
@@ -421,14 +422,14 @@ def main(source_video_path: str, target_video_path: str, device: str, mode: Mode
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='')
-    parser.add_argument('--source_video_path', type=str, required=True)
-    parser.add_argument('--target_video_path', type=str, required=True)
-    parser.add_argument('--device', type=str, default='cpu')
-    parser.add_argument('--mode', type=Mode, default=Mode.PLAYER_DETECTION)
+    parser.add_argument('source_video_path', type=str, help='Path to the source video.')
+    parser.add_argument('mode', type=Mode, nargs='?', default=Mode.PLAYER_DETECTION, help='Mode of operation for video analysis.')
+    parser.add_argument('device', type=str, nargs='?', default='cpu', help='Device to run the model on (e.g., "cpu", "cuda").')
     args = parser.parse_args()
+    target_video_path = f"{args.source_video_path.split('.mp4')[0]}_{str(args.mode).split('.')[1]}.mp4"
     main(
         source_video_path=args.source_video_path,
-        target_video_path=args.target_video_path,
+        target_video_path=target_video_path,
         device=args.device,
         mode=args.mode
     )
