@@ -226,8 +226,9 @@ def run_ball_detection(source_video_path: str, device: str) -> Iterator[np.ndarr
 
     slicer = sv.InferenceSlicer(
         callback=callback,
+        # supervision v0.26.1 no longer supports overlap_filter_strategy
+        # with little time I did not see an obvious fix. commenting out for now which lets code run.
         #overlap_filter_strategy=sv.OverlapFilter.NONE,
-        #overlap_strategy=sv.OverlapFilter.NONE,
         slice_wh=(640, 640),
     )
 
